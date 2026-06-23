@@ -197,9 +197,12 @@
 
     .metric strong {
       display: block;
-      font-size: clamp(18px, 2vw, 27px);
-      line-height: 1.05;
-      white-space: nowrap;
+      max-width: 100%;
+      font-size: clamp(16px, 1.65vw, 26px);
+      line-height: 1.12;
+      white-space: normal;
+      word-break: keep-all;
+      overflow-wrap: anywhere;
     }
 
     .metric small {
@@ -207,6 +210,7 @@
       color: var(--muted);
       min-height: 16px;
       margin-top: 5px;
+      line-height: 1.35;
     }
 
     .macro-grid {
