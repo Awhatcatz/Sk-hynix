@@ -1,0 +1,2159 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SK하이닉스 단기 반등 전략 대시보드</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f5f7fa;
+      --panel: #ffffff;
+      --ink: #18202a;
+      --muted: #657180;
+      --line: #d9dee6;
+      --soft: #eef2f6;
+      --blue: #1c64f2;
+      --sky: #1769aa;
+      --green: #12805c;
+      --amber: #b7791f;
+      --orange: #d97706;
+      --red: #c2413b;
+      --violet: #6d5bd0;
+      --shadow: 0 10px 28px rgba(27, 36, 49, 0.08);
+      font-family: "Segoe UI", "Malgun Gothic", Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      min-height: 38px;
+      border: 1px solid #cbd4df;
+      background: #fff;
+      color: var(--ink);
+      border-radius: 7px;
+      padding: 9px 12px;
+      cursor: pointer;
+    }
+
+    button.primary {
+      border-color: var(--blue);
+      background: var(--blue);
+      color: #fff;
+    }
+
+    button:disabled {
+      color: #9aa3ae;
+      cursor: not-allowed;
+    }
+
+    input {
+      width: 100%;
+      min-height: 38px;
+      border: 1px solid #cbd4df;
+      background: #fff;
+      color: var(--ink);
+      border-radius: 7px;
+      padding: 8px 10px;
+    }
+
+    label {
+      display: grid;
+      gap: 5px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin: 0;
+    }
+
+    h1 {
+      font-size: clamp(24px, 3vw, 38px);
+      line-height: 1.15;
+      letter-spacing: 0;
+    }
+
+    h2 {
+      font-size: 17px;
+      margin-bottom: 12px;
+    }
+
+    h3 {
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+
+    .shell {
+      width: min(1480px, 100%);
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      margin-top: 6px;
+      font-size: 14px;
+    }
+
+    .toolbar {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .range-switch {
+      display: inline-flex;
+      border: 1px solid #cbd4df;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .range-switch button {
+      min-width: 54px;
+      border: 0;
+      border-radius: 0;
+      padding-inline: 10px;
+    }
+
+    .range-switch button.active {
+      background: #e8f0ff;
+      color: var(--blue);
+      font-weight: 800;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.7fr) minmax(340px, 0.82fr);
+      gap: 16px;
+      align-items: start;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    .panel-body {
+      padding: 16px;
+    }
+
+    .chart-panel {
+      min-height: 760px;
+      display: grid;
+      grid-template-rows: auto auto auto 1fr auto auto auto;
+    }
+
+    .quote-strip {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      padding: 14px 16px 0;
+    }
+
+    .metric {
+      min-width: 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+    }
+
+    .metric span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .metric strong {
+      display: block;
+      font-size: clamp(18px, 2vw, 27px);
+      line-height: 1.05;
+      white-space: nowrap;
+    }
+
+    .metric small {
+      display: block;
+      color: var(--muted);
+      min-height: 16px;
+      margin-top: 5px;
+    }
+
+    .macro-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      padding: 10px 16px 0;
+    }
+
+    .macro-card {
+      min-width: 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: #fbfcfe;
+    }
+
+    .macro-card span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .macro-card strong {
+      display: block;
+      font-size: 20px;
+      line-height: 1.12;
+      white-space: nowrap;
+    }
+
+    .macro-card small {
+      display: block;
+      margin-top: 5px;
+      min-height: 16px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .threshold-note {
+      color: #52606d;
+      line-height: 1.35;
+    }
+
+    .threshold-note strong {
+      display: inline;
+      font-size: inherit;
+      white-space: normal;
+    }
+
+    .news-list {
+      display: grid;
+      gap: 5px;
+      margin-top: 8px;
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .news-list a {
+      color: var(--ink);
+      text-decoration: none;
+    }
+
+    .news-list a:hover {
+      text-decoration: underline;
+    }
+
+    .chart-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 16px 16px 8px;
+    }
+
+    .chart-header h2 {
+      margin-bottom: 4px;
+    }
+
+    .chart-note,
+    .market-quote {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .legend {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+    }
+
+    .legend-swatch {
+      width: 18px;
+      height: 3px;
+      border-radius: 999px;
+      background: currentColor;
+    }
+
+    .chart-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .chart-wrap {
+      position: relative;
+      padding: 0 12px;
+      min-height: 430px;
+    }
+
+    .market-wrap {
+      min-height: 250px;
+      padding-bottom: 6px;
+    }
+
+    canvas {
+      width: 100%;
+      height: 100%;
+      min-height: 430px;
+      display: block;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: linear-gradient(180deg, #fbfcfe 0%, #f7f9fb 100%);
+    }
+
+    #marketChart {
+      min-height: 250px;
+    }
+
+    .chart-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      background: rgba(11, 18, 32, 0.62);
+    }
+
+    .chart-modal[hidden] {
+      display: none;
+    }
+
+    .chart-modal-panel {
+      width: min(1500px, 100%);
+      height: min(900px, calc(100vh - 40px));
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      overflow: hidden;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: 0 24px 70px rgba(7, 14, 26, 0.26);
+    }
+
+    .chart-modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .chart-modal-header p {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 4px;
+    }
+
+    .chart-modal-body {
+      min-height: 0;
+      padding: 12px;
+    }
+
+    #priceChartZoom {
+      height: 100%;
+      min-height: 100%;
+      cursor: grab;
+      touch-action: none;
+    }
+
+    #priceChartZoom.dragging {
+      cursor: grabbing;
+    }
+
+    .status-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      padding: 10px 16px 16px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .side {
+      display: grid;
+      gap: 16px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .level-grid {
+      display: grid;
+      gap: 10px;
+    }
+
+    .level-card {
+      display: grid;
+      gap: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+    }
+
+    .level-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      font-weight: 800;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 25px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: var(--soft);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .pill.hit {
+      background: #fff2f0;
+      color: var(--red);
+    }
+
+    .pill.near {
+      background: #fff8e7;
+      color: var(--amber);
+    }
+
+    .pill.good {
+      background: #eaf8f1;
+      color: var(--green);
+    }
+
+    .pill.wait {
+      background: #edf2f7;
+      color: #52606d;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    th,
+    td {
+      padding: 9px 6px;
+      border-bottom: 1px solid var(--line);
+      text-align: right;
+      vertical-align: top;
+    }
+
+    th:first-child,
+    td:first-child {
+      text-align: left;
+    }
+
+    th {
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .note-list,
+    .signal-list {
+      display: grid;
+      gap: 9px;
+      color: #3d4a58;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .note-list p,
+    .signal-list p {
+      padding-left: 10px;
+      border-left: 3px solid #cbd4df;
+    }
+
+    .signal-list p.good {
+      border-left-color: var(--green);
+    }
+
+    .signal-list p.warn {
+      border-left-color: var(--amber);
+    }
+
+    .signal-list p.bad {
+      border-left-color: var(--red);
+    }
+
+    .log {
+      display: grid;
+      gap: 7px;
+      max-height: 160px;
+      overflow: auto;
+      color: #3d4a58;
+      font-size: 13px;
+    }
+
+    .log-item {
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      padding: 8px;
+      background: #fbfcfe;
+    }
+
+    .up {
+      color: var(--green);
+    }
+
+    .down {
+      color: var(--red);
+    }
+
+    .error {
+      color: var(--red);
+    }
+
+    .footer-note {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+      margin-top: 16px;
+    }
+
+    @media (max-width: 1120px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .quote-strip {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .macro-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .shell {
+        padding: 12px;
+      }
+
+      header {
+        display: grid;
+        align-items: start;
+      }
+
+      .toolbar,
+      .legend {
+        justify-content: flex-start;
+      }
+
+      .quote-strip,
+      .macro-grid,
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .chart-panel {
+        min-height: 680px;
+      }
+
+      .chart-wrap {
+        min-height: 360px;
+      }
+
+      canvas {
+        min-height: 360px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <div>
+        <h1>SK하이닉스 단기 반등 전략 대시보드</h1>
+        <p class="subtitle">000660.KS · KOSPI ^KS11 · 캔들, 5/20/60/120일 이동평균, 매수/익절/손절 기준</p>
+      </div>
+      <div class="toolbar">
+        <div class="range-switch" aria-label="차트 범위">
+          <button type="button" data-range="1d" class="active">1D</button>
+          <button type="button" data-range="5d">5D</button>
+          <button type="button" data-range="1mo">1M</button>
+          <button type="button" data-range="3mo">3M</button>
+          <button type="button" data-range="6mo">6M</button>
+          <button type="button" data-range="1y">1Y</button>
+        </div>
+        <button type="button" id="refreshBtn">새로고침</button>
+        <button type="button" id="notifyBtn" class="primary">알림 켜기</button>
+      </div>
+    </header>
+
+    <section class="layout">
+      <article class="panel chart-panel">
+        <div class="quote-strip">
+          <div class="metric">
+            <span>현재가</span>
+            <strong id="lastPrice">-</strong>
+            <small id="priceTime">-</small>
+          </div>
+          <div class="metric">
+            <span id="rangeMetricLabel">전일대비</span>
+            <strong id="rangeChange">-</strong>
+            <small id="rangeHighLow">-</small>
+          </div>
+          <div class="metric">
+            <span>보유 평가</span>
+            <strong id="positionValue">-</strong>
+            <small id="positionPnl">-</small>
+          </div>
+          <div class="metric">
+            <span>단기 전략</span>
+            <strong id="signalSummary">-</strong>
+            <small id="signalDetail">-</small>
+          </div>
+        </div>
+
+        <div class="macro-grid" aria-label="거시 지표와 뉴스">
+          <section class="macro-card">
+            <span>미국채 10년물</span>
+            <strong id="tenYearValue">-</strong>
+            <small id="tenYearDetail">-</small>
+          </section>
+          <section class="macro-card">
+            <span>PCE 물가</span>
+            <strong id="pceValue">-</strong>
+            <small id="pceDetail">-</small>
+          </section>
+          <section class="macro-card">
+            <span>하이일드 스프레드</span>
+            <strong id="hySpreadValue">-</strong>
+            <small id="hySpreadDetail">-</small>
+            <small class="threshold-note" id="hySpreadGuide">기준: 3% 관심 · 5% 위험 · 7% 스트레스</small>
+          </section>
+          <section class="macro-card">
+            <span>최근 뉴스</span>
+            <strong id="newsHeadline">-</strong>
+            <small id="newsDetail">-</small>
+            <div class="news-list" id="newsList"></div>
+          </section>
+        </div>
+
+        <div class="chart-header">
+          <div>
+            <h2>SK하이닉스 캔들</h2>
+            <p class="chart-note" id="stockChartNote">-</p>
+          </div>
+          <div class="chart-actions">
+            <div class="legend" aria-label="차트 범례">
+              <span class="legend-item" style="color:#12805c"><span class="legend-swatch"></span>MA5</span>
+              <span class="legend-item" style="color:#1c64f2"><span class="legend-swatch"></span>MA20</span>
+              <span class="legend-item" style="color:#b7791f"><span class="legend-swatch"></span>MA60</span>
+              <span class="legend-item" style="color:#6d5bd0"><span class="legend-swatch"></span>MA120</span>
+            </div>
+            <button type="button" id="expandStockChartBtn">차트 확대</button>
+          </div>
+        </div>
+        <div class="chart-wrap">
+          <canvas id="priceChart" width="1200" height="520" aria-label="SK하이닉스 캔들 차트"></canvas>
+        </div>
+
+        <div class="chart-header">
+          <div>
+            <h2>코스피</h2>
+            <p class="market-quote" id="marketQuote">-</p>
+          </div>
+          <div class="legend" aria-label="코스피 범례">
+            <span class="legend-item" style="color:#12805c"><span class="legend-swatch"></span>MA5</span>
+            <span class="legend-item" style="color:#1c64f2"><span class="legend-swatch"></span>MA20</span>
+          </div>
+        </div>
+        <div class="chart-wrap market-wrap">
+          <canvas id="marketChart" width="1200" height="280" aria-label="코스피 캔들 차트"></canvas>
+        </div>
+
+        <div class="status-row">
+          <span id="dataSource">데이터 대기 중</span>
+          <span id="alertState">알림 꺼짐</span>
+        </div>
+      </article>
+
+      <aside class="side">
+        <article class="panel">
+          <div class="panel-body">
+            <h2>전략 입력</h2>
+            <div class="form-grid">
+              <label>종목
+                <input id="symbolInput" value="000660.KS" autocomplete="off">
+              </label>
+              <label>기준고점
+                <input id="highInput" type="number" min="1" step="1000" value="3000000">
+              </label>
+              <label>보유 수량
+                <input id="qtyInput" type="number" min="0" step="1" value="4">
+              </label>
+              <label>보유 평단
+                <input id="avgInput" type="number" min="0" step="1000" value="2600000">
+              </label>
+              <label>여유 현금
+                <input id="cashInput" type="number" min="0" step="10000" value="44000000">
+              </label>
+              <label>알림 여유폭 %
+                <input id="bufferInput" type="number" min="0" step="0.1" value="0.5">
+              </label>
+              <label>목표 이익
+                <input id="targetInput" type="number" min="0" step="100000" value="4000000">
+              </label>
+              <label>방어 손절 %
+                <input id="stopInput" type="number" min="0" step="0.1" value="3">
+              </label>
+            </div>
+            <div class="toolbar" style="justify-content:flex-start; margin-top:12px;">
+              <button type="button" id="saveBtn" class="primary">설정 저장</button>
+              <button type="button" id="resetAlertsBtn">알림 기록 초기화</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-body">
+            <h2>추천 매수 구조</h2>
+            <div class="level-grid" id="levelCards"></div>
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-body">
+            <h2>단기 반등 체크</h2>
+            <div class="signal-list" id="signalNotes"></div>
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-body">
+            <h2>체결 가정</h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>구간</th>
+                  <th>수량</th>
+                  <th>투입</th>
+                  <th>평단</th>
+                  <th>목표가</th>
+                </tr>
+              </thead>
+              <tbody id="planRows"></tbody>
+            </table>
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-body">
+            <h2>전략 검토</h2>
+            <div class="note-list" id="riskNotes"></div>
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-body">
+            <h2>알림 로그</h2>
+            <div class="log" id="alertLog">
+              <div class="log-item">아직 알림이 없습니다.</div>
+            </div>
+            <p class="footer-note">시세는 Yahoo Finance 차트 데이터를 사용합니다. 실제 주문 전에는 증권사 호가, 체결 가능 수량, 지수 흐름을 별도로 확인하세요.</p>
+          </div>
+        </article>
+      </aside>
+    </section>
+  </main>
+
+  <div class="chart-modal" id="stockChartModal" hidden>
+    <section class="chart-modal-panel" role="dialog" aria-modal="true" aria-labelledby="stockChartModalTitle">
+      <div class="chart-modal-header">
+        <div>
+          <h2 id="stockChartModalTitle">SK하이닉스 확대 차트</h2>
+          <p id="stockChartModalNote">캔들 · 이동평균 · 매수/익절/손절 기준</p>
+        </div>
+        <div class="toolbar">
+          <button type="button" id="resetStockZoomBtn">확대 초기화</button>
+          <button type="button" id="closeStockChartBtn">닫기</button>
+        </div>
+      </div>
+      <div class="chart-modal-body">
+        <canvas id="priceChartZoom" width="1500" height="760" aria-label="SK하이닉스 확대 캔들 차트"></canvas>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const RANGE_OPTIONS = {
+      "1d": { label: "1D", interval: "1m", changeLabel: "전일대비", highLowLabel: "일중" },
+      "5d": { label: "5D", interval: "5m", changeLabel: "5일 변동", highLowLabel: "5일" },
+      "1mo": { label: "1M", interval: "1d", changeLabel: "1개월 변동", highLowLabel: "1개월" },
+      "3mo": { label: "3M", interval: "1d", changeLabel: "3개월 변동", highLowLabel: "3개월" },
+      "6mo": { label: "6M", interval: "1d", changeLabel: "6개월 변동", highLowLabel: "6개월" },
+      "1y": { label: "1Y", interval: "1d", changeLabel: "1년 변동", highLowLabel: "1년" }
+    };
+
+    const MA_PERIODS = [5, 20, 60, 120];
+    const MA_COLORS = {
+      5: "#12805c",
+      20: "#1c64f2",
+      60: "#b7791f",
+      120: "#6d5bd0"
+    };
+    const STATIC_DATA_URL = "../data/pages-data.json";
+
+    const defaultConfig = {
+      strategyVersion: 3,
+      symbol: "000660.KS",
+      marketSymbol: "^KS11",
+      referenceHigh: 3000000,
+      currentQty: 4,
+      currentAvg: 2600000,
+      availableCash: 44000000,
+      alertBufferPct: 0.5,
+      targetProfit: 4000000,
+      trimPct: 8,
+      stopPct: 3,
+      range: "1d",
+      levels: [
+        {
+          label: "1차 즉시매수",
+          fixedPrice: 2555000,
+          budget: 20440000,
+          color: "#12805c",
+          rule: "현재가 부근 8주, 목표 이익 400만원의 핵심 비중"
+        },
+        {
+          label: "2차 -5%",
+          fixedPrice: 2427250,
+          budget: 12136250,
+          color: "#d97706",
+          rule: "추가 하락 시 5주, 목표 매도가를 276만원대로 낮춤"
+        },
+        {
+          label: "3차 -10%",
+          fixedPrice: 2299500,
+          budget: 9198000,
+          color: "#c2413b",
+          rule: "4주 추가, 전부 체결 전 반등하면 추격하지 않음"
+        },
+        {
+          label: "4차 -15%",
+          fixedPrice: 2171750,
+          budget: 2171750,
+          color: "#8a2f58",
+          rule: "1주만, 코스피 추가 급락 또는 HY 3% 이상이면 보류"
+        }
+      ]
+    };
+
+    const state = {
+      config: loadConfig(),
+      points: [],
+      dailyPoints: [],
+      marketPoints: [],
+      marketDailyPoints: [],
+      macro: {},
+      meta: null,
+      marketMeta: null,
+      staticData: null,
+      staticDataPromise: null,
+      notificationReady: false,
+      fired: loadFiredAlerts(),
+      refreshTimer: null,
+      stockZoom: {
+        start: 0,
+        end: null,
+        dataLength: 0,
+        dragging: false,
+        dragX: 0,
+        dragStart: 0,
+        dragEnd: null
+      }
+    };
+
+    const els = {
+      priceCanvas: document.getElementById("priceChart"),
+      zoomPriceCanvas: document.getElementById("priceChartZoom"),
+      marketCanvas: document.getElementById("marketChart"),
+      stockChartModal: document.getElementById("stockChartModal"),
+      lastPrice: document.getElementById("lastPrice"),
+      priceTime: document.getElementById("priceTime"),
+      rangeMetricLabel: document.getElementById("rangeMetricLabel"),
+      rangeChange: document.getElementById("rangeChange"),
+      rangeHighLow: document.getElementById("rangeHighLow"),
+      positionValue: document.getElementById("positionValue"),
+      positionPnl: document.getElementById("positionPnl"),
+      signalSummary: document.getElementById("signalSummary"),
+      signalDetail: document.getElementById("signalDetail"),
+      tenYearValue: document.getElementById("tenYearValue"),
+      tenYearDetail: document.getElementById("tenYearDetail"),
+      pceValue: document.getElementById("pceValue"),
+      pceDetail: document.getElementById("pceDetail"),
+      hySpreadValue: document.getElementById("hySpreadValue"),
+      hySpreadDetail: document.getElementById("hySpreadDetail"),
+      hySpreadGuide: document.getElementById("hySpreadGuide"),
+      newsHeadline: document.getElementById("newsHeadline"),
+      newsDetail: document.getElementById("newsDetail"),
+      newsList: document.getElementById("newsList"),
+      stockChartNote: document.getElementById("stockChartNote"),
+      stockChartModalNote: document.getElementById("stockChartModalNote"),
+      marketQuote: document.getElementById("marketQuote"),
+      dataSource: document.getElementById("dataSource"),
+      alertState: document.getElementById("alertState"),
+      levelCards: document.getElementById("levelCards"),
+      signalNotes: document.getElementById("signalNotes"),
+      planRows: document.getElementById("planRows"),
+      riskNotes: document.getElementById("riskNotes"),
+      alertLog: document.getElementById("alertLog"),
+      symbolInput: document.getElementById("symbolInput"),
+      highInput: document.getElementById("highInput"),
+      qtyInput: document.getElementById("qtyInput"),
+      avgInput: document.getElementById("avgInput"),
+      cashInput: document.getElementById("cashInput"),
+      bufferInput: document.getElementById("bufferInput"),
+      targetInput: document.getElementById("targetInput"),
+      stopInput: document.getElementById("stopInput")
+    };
+
+    function clone(value) {
+      return JSON.parse(JSON.stringify(value));
+    }
+
+    function loadConfig() {
+      try {
+        const saved = JSON.parse(localStorage.getItem("skhynix-strategy-config") || "null");
+        if (!saved) return clone(defaultConfig);
+        const merged = { ...defaultConfig, ...saved };
+        if (saved.strategyVersion !== defaultConfig.strategyVersion) {
+          merged.strategyVersion = defaultConfig.strategyVersion;
+          merged.levels = clone(defaultConfig.levels);
+          merged.targetProfit = defaultConfig.targetProfit;
+          merged.trimPct = defaultConfig.trimPct;
+          merged.stopPct = defaultConfig.stopPct;
+        } else {
+          merged.levels = saved.levels || clone(defaultConfig.levels);
+        }
+        return merged;
+      } catch {
+        return clone(defaultConfig);
+      }
+    }
+
+    function saveConfig() {
+      localStorage.setItem("skhynix-strategy-config", JSON.stringify(state.config));
+    }
+
+    function loadFiredAlerts() {
+      try {
+        return JSON.parse(sessionStorage.getItem("skhynix-fired-alerts") || "{}");
+      } catch {
+        return {};
+      }
+    }
+
+    function saveFiredAlerts() {
+      sessionStorage.setItem("skhynix-fired-alerts", JSON.stringify(state.fired));
+    }
+
+    function won(value) {
+      if (!Number.isFinite(value)) return "-";
+      return new Intl.NumberFormat("ko-KR", {
+        style: "currency",
+        currency: "KRW",
+        maximumFractionDigits: 0
+      }).format(value);
+    }
+
+    function num(value, digits = 0) {
+      if (!Number.isFinite(value)) return "-";
+      return new Intl.NumberFormat("ko-KR", { maximumFractionDigits: digits }).format(value);
+    }
+
+    function pct(value) {
+      if (!Number.isFinite(value)) return "-";
+      return `${value >= 0 ? "+" : ""}${value.toFixed(2)}%`;
+    }
+
+    function dateKey(timestamp) {
+      return new Date(timestamp * 1000).toISOString().slice(0, 10);
+    }
+
+    function levelPrice(level) {
+      if (Number.isFinite(level.fixedPrice)) return level.fixedPrice;
+      return Math.round(state.config.referenceHigh * (1 - level.drawdown) / 1000) * 1000;
+    }
+
+    function targetPrice() {
+      const plan = buildPlan();
+      return plan.totalQty > 0 ? (plan.totalCost + state.config.targetProfit) / plan.totalQty : 0;
+    }
+
+    function trimPrice() {
+      const target = targetPrice();
+      return target ? target * 1.03 : 0;
+    }
+
+    function stopPrice() {
+      return state.config.currentAvg * (1 - state.config.stopPct / 100);
+    }
+
+    function currentRange() {
+      return RANGE_OPTIONS[state.config.range] ? state.config.range : "1d";
+    }
+
+    function currentRangeConfig() {
+      return RANGE_OPTIONS[currentRange()];
+    }
+
+    function applyInputs() {
+      els.symbolInput.value = state.config.symbol;
+      els.highInput.value = state.config.referenceHigh;
+      els.qtyInput.value = state.config.currentQty;
+      els.avgInput.value = state.config.currentAvg;
+      els.cashInput.value = state.config.availableCash;
+      els.bufferInput.value = state.config.alertBufferPct;
+      els.targetInput.value = state.config.targetProfit;
+      els.stopInput.value = state.config.stopPct;
+      document.querySelectorAll(".range-switch button").forEach((button) => {
+        button.classList.toggle("active", button.dataset.range === currentRange());
+      });
+    }
+
+    function readInputs() {
+      state.config.symbol = els.symbolInput.value.trim() || defaultConfig.symbol;
+      state.config.referenceHigh = Math.max(1, Number(els.highInput.value) || defaultConfig.referenceHigh);
+      state.config.currentQty = Math.max(0, Math.floor(Number(els.qtyInput.value) || 0));
+      state.config.currentAvg = Math.max(0, Number(els.avgInput.value) || 0);
+      state.config.availableCash = Math.max(0, Number(els.cashInput.value) || 0);
+      state.config.alertBufferPct = Math.max(0, Number(els.bufferInput.value) || 0);
+      state.config.targetProfit = Math.max(0, Number(els.targetInput.value) || defaultConfig.targetProfit);
+      state.config.stopPct = Math.max(0, Number(els.stopInput.value) || defaultConfig.stopPct);
+    }
+
+    function yahooUrl(symbol, range, interval) {
+      const encodedSymbol = encodeURIComponent(symbol);
+      const query = `symbol=${encodedSymbol}&range=${range}&interval=${interval}`;
+      if (location.protocol === "file:") {
+        return `https://query1.finance.yahoo.com/v8/finance/chart/${encodedSymbol}?range=${range}&interval=${interval}`;
+      }
+      return `/api/yahoo-chart?${query}`;
+    }
+
+    function isGitHubPages() {
+      return location.hostname.endsWith(".github.io");
+    }
+
+    function chartSnapshotKey(symbol, range, interval) {
+      return `${symbol}|${range}|${interval}`;
+    }
+
+    async function loadStaticData() {
+      if (!state.staticDataPromise) {
+        state.staticDataPromise = fetch(STATIC_DATA_URL, { cache: "no-store" })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error(`정적 데이터 응답 오류 ${response.status}`);
+            }
+            return response.json();
+          })
+          .then((payload) => {
+            state.staticData = payload;
+            return payload;
+          });
+      }
+      return state.staticDataPromise;
+    }
+
+    function formatSnapshotTime(generatedAt) {
+      if (!generatedAt) return "갱신시각 없음";
+      const date = new Date(generatedAt);
+      if (Number.isNaN(date.getTime())) return generatedAt;
+      return new Intl.DateTimeFormat("ko-KR", {
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        timeZone: "Asia/Seoul"
+      }).format(date);
+    }
+
+    async function fetchYahooSnapshot(symbol, range, interval) {
+      const snapshot = await loadStaticData();
+      const key = chartSnapshotKey(symbol, range, interval);
+      const payload = snapshot.charts && snapshot.charts[key];
+      let result = payload?.chart?.result?.[0];
+      if (!result && interval === "1d" && range !== "1y") {
+        const fallbackPayload = snapshot.charts && snapshot.charts[chartSnapshotKey(symbol, "1y", "1d")];
+        result = fallbackPayload?.chart?.result?.[0];
+        if (result) {
+          const parsed = parseChartResult(result);
+          const daysByRange = { "1mo": 40, "3mo": 100, "6mo": 200 };
+          const days = daysByRange[range];
+          if (days && parsed.points.length) {
+            const cutoff = parsed.points.at(-1).time - days * 24 * 60 * 60;
+            return {
+              ...parsed,
+              points: parsed.points.filter((point) => point.time >= cutoff),
+              source: "snapshot"
+            };
+          }
+        }
+      }
+      if (!result) {
+        throw new Error(`${key} 정적 시세 데이터가 없습니다.`);
+      }
+      return { ...parseChartResult(result), source: "snapshot" };
+    }
+
+    async function fetchYahoo(symbol, range, interval) {
+      const errors = [];
+      if (!isGitHubPages()) {
+        try {
+          const response = await fetch(yahooUrl(symbol, range, interval), { cache: "no-store" });
+          if (!response.ok) {
+            throw new Error(`${symbol} 시세 응답 오류 ${response.status}`);
+          }
+          const payload = await response.json();
+          const result = payload.chart && payload.chart.result && payload.chart.result[0];
+          if (!result) {
+            throw new Error(`${symbol} 시세 데이터가 비어 있습니다.`);
+          }
+          return { ...parseChartResult(result), source: "live" };
+        } catch (error) {
+          errors.push(error.message);
+        }
+      }
+      try {
+        return await fetchYahooSnapshot(symbol, range, interval);
+      } catch (error) {
+        errors.push(error.message);
+      }
+      throw new Error(errors.join(" · "));
+    }
+
+    function parseChartResult(result) {
+      const quote = result.indicators.quote[0];
+      const points = result.timestamp.map((time, index) => ({
+        time,
+        open: quote.open[index],
+        high: quote.high[index],
+        low: quote.low[index],
+        close: quote.close[index],
+        volume: quote.volume[index]
+      })).filter((point) => (
+        Number.isFinite(point.open) &&
+        Number.isFinite(point.high) &&
+        Number.isFinite(point.low) &&
+        Number.isFinite(point.close)
+      ));
+
+      if (!points.length) {
+        throw new Error(`${result.meta.symbol} 유효한 가격 데이터가 없습니다.`);
+      }
+      if (result.meta?.dataGranularity === "1d") {
+        const regularPrice = Number(result.meta.regularMarketPrice);
+        const regularTime = Number(result.meta.regularMarketTime);
+        const last = points.at(-1);
+        if (
+          Number.isFinite(regularPrice) &&
+          Number.isFinite(regularTime) &&
+          (!last || regularTime > last.time + 60 * 60)
+        ) {
+          const dayHigh = Number(result.meta.regularMarketDayHigh);
+          const dayLow = Number(result.meta.regularMarketDayLow);
+          const previousClose = Number(result.meta.chartPreviousClose || result.meta.previousClose);
+          points.push({
+            time: regularTime,
+            open: Number.isFinite(previousClose) ? previousClose : regularPrice,
+            high: Number.isFinite(dayHigh) ? Math.max(dayHigh, regularPrice) : regularPrice,
+            low: Number.isFinite(dayLow) ? Math.min(dayLow, regularPrice) : regularPrice,
+            close: regularPrice,
+            volume: Number(result.meta.regularMarketVolume) || 0
+          });
+        }
+      }
+      return { meta: result.meta, points };
+    }
+
+    async function fetchJson(url) {
+      const response = await fetch(url, { cache: "no-store" });
+      if (!response.ok) {
+        throw new Error(`데이터 응답 오류 ${response.status}`);
+      }
+      return response.json();
+    }
+
+    async function fetchMacroData() {
+      if (!isGitHubPages()) {
+        try {
+          const [tenYear, pce, corePce, highYield, news] = await Promise.all([
+            fetchJson("/api/fred-series?series=DGS10&limit=260"),
+            fetchJson("/api/fred-series?series=PCEPI&limit=180"),
+            fetchJson("/api/fred-series?series=PCEPILFE&limit=180"),
+            fetchJson("/api/fred-series?series=BAMLH0A0HYM2&limit=260"),
+            fetchJson("/api/news?q=SK%20hynix%20OR%20SK%ED%95%98%EC%9D%B4%EB%8B%89%EC%8A%A4%20semiconductor&limit=4")
+          ]);
+          state.macro = { tenYear, pce, corePce, highYield, news };
+          renderMacro();
+          return;
+        } catch (error) {
+          console.warn("API 거시 데이터 로드 실패, 정적 스냅샷으로 전환", error);
+        }
+      }
+      const snapshot = await loadStaticData();
+      state.macro = snapshot.macro || {};
+      renderMacro();
+    }
+
+    async function fetchChart() {
+      const range = currentRange();
+      const rangeConfig = currentRangeConfig();
+      const [stock, daily, market, marketDaily] = await Promise.all([
+        fetchYahoo(state.config.symbol, range, rangeConfig.interval),
+        fetchYahoo(state.config.symbol, "1y", "1d"),
+        fetchYahoo(state.config.marketSymbol, range, rangeConfig.interval),
+        fetchYahoo(state.config.marketSymbol, "1y", "1d")
+      ]);
+
+      state.points = stock.points;
+      state.dailyPoints = daily.points;
+      state.marketPoints = market.points;
+      state.marketDailyPoints = marketDaily.points;
+      state.meta = stock.meta;
+      state.marketMeta = market.meta;
+
+      const usesSnapshot = [stock, daily, market, marketDaily].some((item) => item.source === "snapshot");
+      const sourceLabel = usesSnapshot
+        ? `GitHub Pages 스냅샷 · ${formatSnapshotTime(state.staticData?.generatedAt)} KST`
+        : "Yahoo Finance";
+      els.dataSource.textContent = `${state.config.symbol} + KOSPI · ${rangeConfig.label} · ${sourceLabel}`;
+      renderAll();
+      checkAlerts(stock.points.at(-1).close);
+    }
+
+    function attachSma(points) {
+      const decorated = points.map((point) => ({ ...point, ma: {} }));
+      MA_PERIODS.forEach((period) => {
+        let sum = 0;
+        for (let index = 0; index < decorated.length; index += 1) {
+          sum += decorated[index].close;
+          if (index >= period) sum -= decorated[index - period].close;
+          if (index >= period - 1) {
+            decorated[index].ma[period] = sum / period;
+          }
+        }
+      });
+      return decorated;
+    }
+
+    function latestMa(points, period) {
+      const decorated = attachSma(points);
+      for (let index = decorated.length - 1; index >= 0; index -= 1) {
+        const value = decorated[index].ma[period];
+        if (Number.isFinite(value)) return value;
+      }
+      return null;
+    }
+
+    function decorateVisibleWithMovingAverage(visiblePoints, dailyPoints, interval) {
+      if (interval !== "1d") {
+        return attachSma(visiblePoints);
+      }
+      const dailyWithMa = attachSma(dailyPoints);
+      const maByDate = new Map(dailyWithMa.map((point) => [dateKey(point.time), point.ma]));
+      return visiblePoints.map((point) => ({
+        ...point,
+        ma: maByDate.get(dateKey(point.time)) || {}
+      }));
+    }
+
+    function getRangeStats(points, meta, rangeConfig) {
+      const last = points.at(-1);
+      const first = points[0];
+      const highs = points.map((point) => point.high);
+      const lows = points.map((point) => point.low);
+      const high = Math.max(...highs);
+      const low = Math.min(...lows);
+      const base = rangeConfig.label === "1D"
+        ? (meta.chartPreviousClose || meta.previousClose || first.close)
+        : first.close;
+      const change = last.close - base;
+      const changePct = base ? change / base * 100 : 0;
+      return { last, first, high, low, change, changePct };
+    }
+
+    function buildPlan() {
+      const rows = [];
+      let qty = state.config.currentQty;
+      let cost = state.config.currentQty * state.config.currentAvg;
+      let cash = state.config.availableCash;
+
+      rows.push({
+        label: "현재 보유",
+        shares: qty,
+        spend: cost,
+        avg: qty > 0 ? cost / qty : 0,
+        target: qty > 0 ? (cost + state.config.targetProfit) / qty : 0,
+        cash
+      });
+
+      state.config.levels.forEach((level) => {
+        const price = levelPrice(level);
+        const plannedShares = Math.floor(Math.min(cash, level.budget) / price);
+        const spend = plannedShares * price;
+        qty += plannedShares;
+        cost += spend;
+        cash -= spend;
+        rows.push({
+          label: level.label,
+          price,
+          shares: plannedShares,
+          spend,
+          avg: qty > 0 ? cost / qty : 0,
+          target: qty > 0 ? (cost + state.config.targetProfit) / qty : 0,
+          cash
+        });
+      });
+
+      return { rows, totalQty: qty, totalCost: cost, cashLeft: cash, avg: qty > 0 ? cost / qty : 0 };
+    }
+
+    function renderQuote() {
+      if (!state.points.length || !state.meta) return;
+      const rangeConfig = currentRangeConfig();
+      const stats = getRangeStats(state.points, state.meta, rangeConfig);
+      const last = stats.last;
+      const positionCost = state.config.currentQty * state.config.currentAvg;
+      const positionValue = state.config.currentQty * last.close;
+      const positionPnl = positionValue - positionCost;
+      const positionPnlPct = positionCost ? positionPnl / positionCost * 100 : 0;
+      const signal = buildSignal();
+
+      els.lastPrice.textContent = won(last.close);
+      els.priceTime.textContent = new Date(last.time * 1000).toLocaleString("ko-KR", {
+        dateStyle: "short",
+        timeStyle: "short"
+      });
+      els.rangeMetricLabel.textContent = rangeConfig.changeLabel;
+      els.rangeChange.textContent = `${won(stats.change)} ${pct(stats.changePct)}`;
+      els.rangeChange.className = stats.change >= 0 ? "up" : "down";
+      els.rangeHighLow.textContent = `${rangeConfig.highLowLabel} 고 ${won(stats.high)} · 저 ${won(stats.low)}`;
+      els.positionValue.textContent = won(positionValue);
+      els.positionPnl.textContent = `${won(positionPnl)} ${pct(positionPnlPct)}`;
+      els.positionPnl.className = positionPnl >= 0 ? "up" : "down";
+      els.signalSummary.textContent = signal.summary;
+      els.signalSummary.className = signal.tone === "bad" ? "down" : signal.tone === "good" ? "up" : "";
+      els.signalDetail.textContent = signal.detail;
+      els.stockChartNote.textContent = rangeConfig.interval === "1d"
+        ? "일봉 5/20/60/120일 이동평균을 곡선으로 표시합니다."
+        : "1D/5D 장중 구간은 봉 기준 5/20/60/120 이동평균을 곡선으로 표시합니다.";
+
+      renderMarketQuote();
+    }
+
+    function renderMarketQuote() {
+      if (!state.marketPoints.length || !state.marketMeta) return;
+      const stats = getRangeStats(state.marketPoints, state.marketMeta, currentRangeConfig());
+      els.marketQuote.textContent = `현재 ${num(stats.last.close, 2)} · ${currentRangeConfig().changeLabel} ${num(stats.change, 2)} ${pct(stats.changePct)} · 고 ${num(stats.high, 2)} / 저 ${num(stats.low, 2)}`;
+    }
+
+    function renderMacro() {
+      const tenYear = state.macro.tenYear;
+      const pce = state.macro.pce;
+      const corePce = state.macro.corePce;
+      const highYield = state.macro.highYield;
+      const news = state.macro.news;
+
+      if (tenYear?.latest) {
+        const changeBp = tenYear.previous ? (tenYear.latest.value - tenYear.previous.value) * 100 : null;
+        els.tenYearValue.textContent = `${tenYear.latest.value.toFixed(2)}%`;
+        els.tenYearDetail.textContent = `${tenYear.latest.date}${Number.isFinite(changeBp) ? ` · 전일 ${changeBp >= 0 ? "+" : ""}${changeBp.toFixed(0)}bp` : ""}`;
+        els.tenYearValue.className = Number.isFinite(changeBp) && changeBp > 0 ? "up" : Number.isFinite(changeBp) && changeBp < 0 ? "down" : "";
+      }
+
+      if (pce?.observations?.length) {
+        const latest = pce.observations.at(-1);
+        const previous = pce.observations.at(-2);
+        const yearAgo = pce.observations.at(-13);
+        const coreLatest = corePce?.observations?.at(-1);
+        const coreYearAgo = corePce?.observations?.at(-13);
+        const mom = previous ? (latest.value / previous.value - 1) * 100 : null;
+        const yoy = yearAgo ? (latest.value / yearAgo.value - 1) * 100 : null;
+        const coreYoy = coreLatest && coreYearAgo ? (coreLatest.value / coreYearAgo.value - 1) * 100 : null;
+        els.pceValue.textContent = Number.isFinite(yoy) ? `${yoy.toFixed(2)}% YoY` : num(latest.value, 2);
+        els.pceDetail.textContent = `${latest.date}${Number.isFinite(mom) ? ` · MoM ${pct(mom)}` : ""}${Number.isFinite(coreYoy) ? ` · Core ${coreYoy.toFixed(2)}%` : ""}`;
+        els.pceValue.className = Number.isFinite(yoy) && yoy >= 3 ? "up" : "";
+      }
+
+      if (highYield?.latest) {
+        const changeBp = highYield.previous ? (highYield.latest.value - highYield.previous.value) * 100 : null;
+        const level = highYieldStressLevel(highYield.latest.value);
+        els.hySpreadValue.textContent = `${highYield.latest.value.toFixed(2)}%`;
+        els.hySpreadDetail.textContent = `${highYield.latest.date}${Number.isFinite(changeBp) ? ` · 전일 ${changeBp >= 0 ? "+" : ""}${changeBp.toFixed(0)}bp` : ""}`;
+        els.hySpreadValue.className = Number.isFinite(changeBp) && changeBp > 0 ? "down" : Number.isFinite(changeBp) && changeBp < 0 ? "up" : "";
+        els.hySpreadGuide.innerHTML = `현재: <strong>${level}</strong> · 기준 3% 관심, 5% 위험, 7% 스트레스`;
+      }
+
+      if (news?.items?.length) {
+        const first = news.items[0];
+        els.newsHeadline.textContent = first.source || "뉴스";
+        els.newsDetail.textContent = cleanNewsTitle(first.title);
+        els.newsList.innerHTML = news.items.slice(0, 3).map((item) => `
+          <a href="${escapeAttr(item.link)}" target="_blank" rel="noopener noreferrer">${escapeHtml(cleanNewsTitle(item.title))}</a>
+        `).join("");
+      }
+    }
+
+    function cleanNewsTitle(title) {
+      return (title || "").replace(/\s-\s[^-]+$/, "").trim();
+    }
+
+    function highYieldStressLevel(value) {
+      if (!Number.isFinite(value)) return "-";
+      if (value >= 7) return "스트레스";
+      if (value >= 5) return "위험";
+      if (value >= 3) return "관심";
+      return "안정";
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function escapeAttr(value) {
+      return escapeHtml(value);
+    }
+
+    function renderLevels(lastPrice) {
+      els.levelCards.innerHTML = "";
+      const touchedPrices = new Set();
+      state.points.forEach((point) => {
+        state.config.levels.forEach((level) => {
+          const price = levelPrice(level);
+          if (point.low <= price) touchedPrices.add(price);
+        });
+      });
+
+      state.config.levels.forEach((level, index) => {
+        const price = levelPrice(level);
+        const triggerPrice = price * (1 + state.config.alertBufferPct / 100);
+        const shares = Math.floor(Math.min(state.config.availableCash, level.budget) / price);
+        const touched = touchedPrices.has(price);
+        let status = "대기";
+        let className = "wait";
+        if (Number.isFinite(lastPrice) && lastPrice <= price) {
+          status = "도달";
+          className = "hit";
+        } else if (touched && Number.isFinite(lastPrice) && lastPrice > price) {
+          status = "회복 확인";
+          className = "good";
+        } else if (Number.isFinite(lastPrice) && lastPrice <= triggerPrice) {
+          status = "근접";
+          className = "near";
+        }
+
+        const card = document.createElement("div");
+        card.className = "level-card";
+        card.innerHTML = `
+          <div class="level-head">
+            <span style="color:${level.color}">${level.label}</span>
+            <span class="pill ${className}">${status}</span>
+          </div>
+          <div class="form-grid">
+            <label>가격
+              <input type="number" value="${price}" disabled>
+            </label>
+            <label>예산
+              <input type="number" min="0" step="10000" value="${level.budget}" data-level-budget="${index}">
+            </label>
+          </div>
+          <small>예상 ${num(shares)}주 · 알림 ${won(triggerPrice)} · ${level.rule}</small>
+        `;
+        els.levelCards.appendChild(card);
+      });
+
+      document.querySelectorAll("[data-level-budget]").forEach((input) => {
+        input.addEventListener("change", () => {
+          const index = Number(input.dataset.levelBudget);
+          state.config.levels[index].budget = Math.max(0, Number(input.value) || 0);
+          saveConfig();
+          renderAll();
+        });
+      });
+    }
+
+    function renderPlan() {
+      const plan = buildPlan();
+      els.planRows.innerHTML = "";
+
+      plan.rows.forEach((row) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${row.label}${row.price ? `<br><small>${won(row.price)}</small>` : ""}</td>
+          <td>${num(row.shares)}</td>
+          <td>${won(row.spend)}</td>
+          <td>${won(row.avg)}</td>
+          <td>${won(row.target)}</td>
+        `;
+        els.planRows.appendChild(tr);
+      });
+    }
+
+    function buildSignal() {
+      if (!state.points.length || !state.dailyPoints.length || !state.marketPoints.length || !state.marketDailyPoints.length) {
+        return { summary: "대기", detail: "시세 로딩 중", tone: "wait", notes: [] };
+      }
+
+      const last = state.points.at(-1);
+      const rangeStats = getRangeStats(state.points, state.meta, currentRangeConfig());
+      const marketStats = getRangeStats(state.marketPoints, state.marketMeta, currentRangeConfig());
+      const ma5 = latestMa(state.dailyPoints, 5);
+      const ma20 = latestMa(state.dailyPoints, 20);
+      const marketMa5 = latestMa(state.marketDailyPoints, 5);
+      const marketMa20 = latestMa(state.marketDailyPoints, 20);
+      const aboveMa5 = Number.isFinite(ma5) && last.close >= ma5;
+      const aboveMa20 = Number.isFinite(ma20) && last.close >= ma20;
+      const marketAboveMa5 = Number.isFinite(marketMa5) && marketStats.last.close >= marketMa5;
+      const marketAboveMa20 = Number.isFinite(marketMa20) && marketStats.last.close >= marketMa20;
+      const greenCandle = last.close >= last.open;
+      const nearLevel = state.config.levels.some((level) => last.close <= levelPrice(level) * (1 + state.config.alertBufferPct / 100));
+      const touchedAndRecovered = state.config.levels.some((level) => {
+        const price = levelPrice(level);
+        return state.points.some((point) => point.low <= price) && last.close > price;
+      });
+
+      let summary = "관망 우선";
+      let detail = "지수와 종목 회복 확인 전";
+      let tone = "warn";
+
+      if (marketStats.changePct <= -3 && !marketAboveMa5) {
+        summary = "방어 우선";
+        detail = "코스피 급락과 단기선 하회";
+        tone = "bad";
+      } else if (touchedAndRecovered && greenCandle && (marketAboveMa5 || marketStats.changePct > 0)) {
+        summary = "반등 확인";
+        detail = "매수선 회복 + 지수 안정";
+        tone = "good";
+      } else if (aboveMa5 && marketAboveMa5) {
+        summary = "소량 추격 가능";
+        detail = "종목과 지수 5일선 회복";
+        tone = "good";
+      } else if (nearLevel) {
+        summary = "매수 후보";
+        detail = "가격은 근접, 회복 확인 필요";
+        tone = "warn";
+      }
+
+      const notes = [
+        {
+          tone: marketAboveMa5 ? "good" : "bad",
+          text: `코스피: ${currentRangeConfig().changeLabel} ${pct(marketStats.changePct)}, 5일선 ${marketAboveMa5 ? "상회" : "하회"}, 20일선 ${marketAboveMa20 ? "상회" : "하회"}`
+        },
+        {
+          tone: aboveMa5 ? "good" : "warn",
+          text: `SK하이닉스: 5일선 ${ma5 ? won(ma5) : "-"} ${aboveMa5 ? "상회" : "하회"}, 20일선 ${ma20 ? won(ma20) : "-"} ${aboveMa20 ? "상회" : "하회"}`
+        },
+        {
+          tone: touchedAndRecovered ? "good" : "warn",
+          text: `매수 조건: 가격선 터치만으로는 부족하고, 기준선 회복 또는 양봉 전환을 확인`
+        },
+        {
+          tone: last.close <= stopPrice() ? "bad" : "warn",
+          text: `리스크 관리: 방어 손절선 ${won(stopPrice())}, 400만원 목표가 ${won(targetPrice())}, 여유 정리선 ${won(trimPrice())}`
+        }
+      ];
+
+      return { summary, detail, tone, notes };
+    }
+
+    function renderStrategyNotes() {
+      const signal = buildSignal();
+      els.signalNotes.innerHTML = signal.notes.map((note) => `<p class="${note.tone}">${note.text}</p>`).join("");
+
+      const plan = buildPlan();
+      const currentCost = state.config.currentQty * state.config.currentAvg;
+      const plannedBudget = state.config.levels.reduce((sum, level) => sum + level.budget, 0);
+      const totalExposure = currentCost + Math.min(plannedBudget, state.config.availableCash);
+      const strategyCapital = currentCost + state.config.availableCash;
+      const exposureRatio = strategyCapital > 0 ? totalExposure / strategyCapital * 100 : 0;
+      const finalTarget = plan.totalQty > 0 ? (plan.totalCost + state.config.targetProfit) / plan.totalQty : 0;
+
+      const notes = [
+        `실행안은 현재가 부근 8주, -5% 5주, -10% 4주, -15% 1주입니다. 현금 4,400만원을 전술 자금으로 쓰되, 별도 초비상 현금 5,000만원은 방어 버퍼로 남겨 둡니다.`,
+        `모두 집행하면 예상 최종 ${num(plan.totalQty)}주, 평균단가 ${won(plan.avg)}, 남는 전술 현금 ${won(plan.cashLeft)}입니다. 이때 ${won(state.config.targetProfit)} 목표 이익 매도가는 ${won(finalTarget)}입니다.`,
+        `현재가 부근 8주가 핵심입니다. 이 단계만 체결되면 목표가는 약 290만원대, -10%까지 체결되면 목표가는 267만원대로 내려갑니다.`,
+        `전액 즉시 매수는 백테스트상 속도는 빠르지만 최악 낙폭이 커졌습니다. 그래서 지금은 앞단에 크게 싣고도 -5%, -10%, -15% 대응 여지를 남기는 구조가 낫습니다.`,
+        `코스피가 추가 급락하거나 하이일드 스프레드가 3% 이상으로 올라가면 마지막 -15% 1주는 보류합니다. 목표 도달 시에는 400만원 실현을 우선합니다.`
+      ];
+
+      els.riskNotes.innerHTML = notes.map((note) => `<p>${note}</p>`).join("");
+    }
+
+    function renderAll() {
+      const lastPrice = state.points.at(-1)?.close;
+      renderQuote();
+      renderLevels(lastPrice);
+      renderPlan();
+      renderStrategyNotes();
+      drawCharts();
+    }
+
+    function drawCharts() {
+      const rangeConfig = currentRangeConfig();
+      const visibleStock = decorateVisibleWithMovingAverage(state.points, state.dailyPoints, rangeConfig.interval);
+      const visibleMarket = decorateVisibleWithMovingAverage(state.marketPoints, state.marketDailyPoints, rangeConfig.interval);
+      const stockLatestMas = latestMaMap(state.dailyPoints);
+      const marketLatestMas = latestMaMap(state.marketDailyPoints);
+
+      const stockLines = state.config.levels.map((level) => ({
+        value: levelPrice(level),
+        label: `${level.label} ${won(levelPrice(level))}`,
+        color: level.color,
+        dash: [7, 5]
+      })).concat([
+        { value: targetPrice(), label: `400만원 목표 ${won(targetPrice())}`, color: "#12805c", dash: [3, 4] },
+        { value: trimPrice(), label: `목표+3% ${won(trimPrice())}`, color: "#1c64f2", dash: [3, 4] },
+        { value: stopPrice(), label: `방어선 ${won(stopPrice())}`, color: "#c2413b", dash: [3, 4] }
+      ]);
+
+      drawCandleChart(els.priceCanvas, visibleStock, {
+        priceType: "stock",
+        interval: rangeConfig.interval,
+        latestMas: stockLatestMas,
+        levels: stockLines,
+        maPeriods: MA_PERIODS
+      });
+
+      if (!els.stockChartModal.hidden) {
+        const zoomStock = getZoomedPoints(visibleStock);
+        els.stockChartModalNote.textContent = `${formatZoomRange(zoomStock, rangeConfig.interval)} · 표시 ${zoomStock.length}개 / 전체 ${visibleStock.length}개`;
+        drawCandleChart(els.zoomPriceCanvas, zoomStock, {
+          priceType: "stock",
+          interval: rangeConfig.interval,
+          latestMas: stockLatestMas,
+          levels: stockLines,
+          maPeriods: MA_PERIODS,
+          zoom: true,
+          totalPoints: visibleStock.length,
+          visibleStart: state.stockZoom.start,
+          visibleEnd: state.stockZoom.end
+        });
+      }
+
+      drawCandleChart(els.marketCanvas, visibleMarket, {
+        priceType: "index",
+        interval: rangeConfig.interval,
+        latestMas: marketLatestMas,
+        levels: [],
+        maPeriods: [5, 20],
+        compact: true
+      });
+    }
+
+    function resetStockZoom(length = state.points.length) {
+      state.stockZoom.start = 0;
+      state.stockZoom.end = length || null;
+      state.stockZoom.dataLength = length || 0;
+      state.stockZoom.dragging = false;
+    }
+
+    function syncStockZoom(length) {
+      if (!length) return;
+      const zoom = state.stockZoom;
+      if (!zoom.end || zoom.dataLength !== length) {
+        const visibleCount = zoom.end ? zoom.end - zoom.start : length;
+        zoom.end = length;
+        zoom.start = Math.max(0, length - Math.min(length, visibleCount || length));
+        zoom.dataLength = length;
+      }
+      clampStockZoom();
+    }
+
+    function clampStockZoom() {
+      const length = state.points.length;
+      const zoom = state.stockZoom;
+      if (!length) {
+        zoom.start = 0;
+        zoom.end = 0;
+        return;
+      }
+      const minVisible = Math.min(length, 12);
+      const maxVisible = length;
+      let visibleCount = Math.round((zoom.end ?? length) - zoom.start);
+      visibleCount = Math.max(minVisible, Math.min(maxVisible, visibleCount));
+      zoom.start = Math.max(0, Math.min(length - visibleCount, Math.round(zoom.start)));
+      zoom.end = zoom.start + visibleCount;
+      zoom.dataLength = length;
+    }
+
+    function getZoomedPoints(points) {
+      syncStockZoom(points.length);
+      return points.slice(state.stockZoom.start, state.stockZoom.end);
+    }
+
+    function zoomStockChartAt(clientX, deltaY) {
+      if (!state.points.length) return;
+      syncStockZoom(state.points.length);
+      const rect = els.zoomPriceCanvas.getBoundingClientRect();
+      const zoom = state.stockZoom;
+      const currentCount = zoom.end - zoom.start;
+      const direction = deltaY < 0 ? 0.82 : 1.22;
+      const nextCount = Math.round(currentCount * direction);
+      const minVisible = Math.min(state.points.length, 12);
+      const clampedCount = Math.max(minVisible, Math.min(state.points.length, nextCount));
+      const ratio = Math.max(0, Math.min(1, (clientX - rect.left) / Math.max(1, rect.width)));
+      const anchorIndex = zoom.start + ratio * currentCount;
+      zoom.start = Math.round(anchorIndex - ratio * clampedCount);
+      zoom.end = zoom.start + clampedCount;
+      clampStockZoom();
+      drawCharts();
+    }
+
+    function panStockChart(deltaX) {
+      if (!state.points.length) return;
+      syncStockZoom(state.points.length);
+      const rect = els.zoomPriceCanvas.getBoundingClientRect();
+      const zoom = state.stockZoom;
+      const visibleCount = zoom.dragEnd - zoom.dragStart;
+      const candlesPerPixel = visibleCount / Math.max(1, rect.width);
+      const shift = Math.round(-deltaX * candlesPerPixel);
+      zoom.start = zoom.dragStart + shift;
+      zoom.end = zoom.dragEnd + shift;
+      clampStockZoom();
+      drawCharts();
+    }
+
+    function latestMaMap(points) {
+      const map = {};
+      MA_PERIODS.forEach((period) => {
+        map[period] = latestMa(points, period);
+      });
+      return map;
+    }
+
+    function drawCandleChart(canvas, points, options) {
+      if (!points.length) return;
+      const rect = canvas.getBoundingClientRect();
+      const scale = window.devicePixelRatio || 1;
+      const minWidth = options.zoom ? 1200 : options.compact ? 800 : 900;
+      const minHeight = options.zoom ? 680 : options.compact ? 250 : 430;
+      canvas.width = Math.max(minWidth, Math.floor(rect.width * scale));
+      canvas.height = Math.max(minHeight, Math.floor(rect.height * scale));
+      const ctx = canvas.getContext("2d");
+      ctx.setTransform(scale, 0, 0, scale, 0, 0);
+
+      const width = canvas.width / scale;
+      const height = canvas.height / scale;
+      ctx.clearRect(0, 0, width, height);
+
+      const pad = options.compact
+        ? { left: 62, right: 96, top: 18, bottom: 34 }
+        : options.zoom
+          ? { left: 82, right: 176, top: 30, bottom: 52 }
+          : { left: 70, right: 150, top: 22, bottom: 42 };
+      const plotW = width - pad.left - pad.right;
+      const plotH = height - pad.top - pad.bottom;
+      const values = [];
+      const candleValues = [];
+
+      points.forEach((point) => {
+        candleValues.push(point.high, point.low, point.open, point.close);
+        values.push(point.high, point.low, point.open, point.close);
+        options.maPeriods.forEach((period) => {
+          const ma = point.ma?.[period];
+          if (Number.isFinite(ma)) values.push(ma);
+        });
+      });
+
+      const candleMin = Math.min(...candleValues);
+      const candleMax = Math.max(...candleValues);
+      const candleSpan = Math.max(1, candleMax - candleMin);
+      options.levels.forEach((line) => {
+        if (!options.zoom || (line.value >= candleMin - candleSpan * 0.35 && line.value <= candleMax + candleSpan * 0.35)) {
+          values.push(line.value);
+        }
+      });
+
+      const minPrice = Math.min(...values);
+      const maxPrice = Math.max(...values);
+      const span = Math.max(1, maxPrice - minPrice);
+      const yMin = minPrice - span * 0.08;
+      const yMax = maxPrice + span * 0.10;
+      const x = (index) => pad.left + (index + 0.5) / points.length * plotW;
+      const y = (price) => pad.top + (yMax - price) / (yMax - yMin) * plotH;
+      const candleW = Math.max(2, Math.min(options.compact ? 10 : 16, plotW / points.length * 0.62));
+
+      ctx.strokeStyle = "#e1e6ee";
+      ctx.lineWidth = 1;
+      ctx.fillStyle = "#657180";
+      ctx.font = "12px Segoe UI, Malgun Gothic, Arial";
+      ctx.textAlign = "right";
+      ctx.textBaseline = "middle";
+
+      for (let i = 0; i <= 5; i += 1) {
+        const price = yMin + (yMax - yMin) * i / 5;
+        const lineY = y(price);
+        ctx.beginPath();
+        ctx.moveTo(pad.left, lineY);
+        ctx.lineTo(width - pad.right, lineY);
+        ctx.stroke();
+        ctx.fillText(formatPrice(price, options.priceType), pad.left - 10, lineY);
+      }
+
+      ctx.textAlign = "center";
+      ctx.textBaseline = "top";
+      const tickCount = Math.min(options.compact ? 4 : 6, points.length);
+      for (let i = 0; i < tickCount; i += 1) {
+        const index = Math.round(i * (points.length - 1) / Math.max(1, tickCount - 1));
+        ctx.fillText(formatTime(points[index].time, options.interval), x(index), height - pad.bottom + 12);
+      }
+
+      points.forEach((point, index) => {
+        const px = x(index);
+        const up = point.close >= point.open;
+        const color = up ? "#c2413b" : "#1769aa";
+        const top = y(Math.max(point.open, point.close));
+        const bottom = y(Math.min(point.open, point.close));
+        ctx.strokeStyle = color;
+        ctx.fillStyle = color;
+        ctx.lineWidth = 1.2;
+        ctx.beginPath();
+        ctx.moveTo(px, y(point.high));
+        ctx.lineTo(px, y(point.low));
+        ctx.stroke();
+        ctx.fillRect(px - candleW / 2, top, candleW, Math.max(1, bottom - top));
+      });
+
+      options.maPeriods.forEach((period) => {
+        const color = MA_COLORS[period];
+        drawMaPath(ctx, points, period, color, x, y);
+      });
+
+      options.levels.forEach((line) => {
+        drawHorizontalLine(ctx, line, y, pad.left, width - pad.right, width - pad.right + 10);
+      });
+
+      const last = points.at(-1);
+      const lastX = x(points.length - 1);
+      const lastY = y(last.close);
+      const badge = formatPrice(last.close, options.priceType);
+      ctx.fillStyle = "#18202a";
+      ctx.font = "800 12px Segoe UI, Malgun Gothic, Arial";
+      const badgeWidth = ctx.measureText(badge).width + 18;
+      const badgeX = Math.min(width - pad.right - badgeWidth, lastX + 8);
+      ctx.fillRect(badgeX, lastY - 14, badgeWidth, 28);
+      ctx.fillStyle = "#fff";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(badge, badgeX + badgeWidth / 2, lastY);
+    }
+
+    function drawMaPath(ctx, points, period, color, x, y) {
+      ctx.save();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1.6;
+      ctx.beginPath();
+      let started = false;
+      points.forEach((point, index) => {
+        const value = point.ma?.[period];
+        if (!Number.isFinite(value)) return;
+        if (!started) {
+          ctx.moveTo(x(index), y(value));
+          started = true;
+        } else {
+          ctx.lineTo(x(index), y(value));
+        }
+      });
+      if (started) ctx.stroke();
+      ctx.restore();
+    }
+
+    function drawHorizontalLine(ctx, line, y, startX, endX, labelX) {
+      const lineY = y(line.value);
+      ctx.save();
+      ctx.setLineDash(line.dash || []);
+      ctx.strokeStyle = line.color;
+      ctx.lineWidth = 1.4;
+      ctx.beginPath();
+      ctx.moveTo(startX, lineY);
+      ctx.lineTo(endX, lineY);
+      ctx.stroke();
+      ctx.restore();
+
+      ctx.fillStyle = line.color;
+      ctx.font = "700 11px Segoe UI, Malgun Gothic, Arial";
+      ctx.textAlign = "left";
+      ctx.textBaseline = "middle";
+      ctx.fillText(line.label, labelX, lineY);
+    }
+
+    function formatPrice(value, type) {
+      if (type === "index") return num(value, value >= 100 ? 0 : 2);
+      return won(Math.round(value / 1000) * 1000);
+    }
+
+    function formatTime(timestamp, interval) {
+      const date = new Date(timestamp * 1000);
+      if (interval === "1d") {
+        return date.toLocaleDateString("ko-KR", { month: "2-digit", day: "2-digit" });
+      }
+      return date.toLocaleString("ko-KR", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" });
+    }
+
+    function formatZoomRange(points, interval) {
+      if (!points.length) return "표시 구간 없음";
+      const first = points[0];
+      const last = points.at(-1);
+      return `${formatTime(first.time, interval)} ~ ${formatTime(last.time, interval)}`;
+    }
+
+    function checkAlerts(price) {
+      if (!Number.isFinite(price)) return;
+      state.config.levels.forEach((level) => {
+        const priceLine = levelPrice(level);
+        const triggerPrice = priceLine * (1 + state.config.alertBufferPct / 100);
+        const key = `${state.config.symbol}-${level.label}-${priceLine}`;
+        if (price <= triggerPrice && !state.fired[key]) {
+          state.fired[key] = true;
+          saveFiredAlerts();
+          const stateText = price <= priceLine ? "매수구간 도달" : "매수구간 근접";
+          notify(`SK하이닉스 ${stateText}`, `${level.label} 기준 ${won(priceLine)}, 현재 ${won(price)}. 단기 반등은 회복 확인 후 판단.`);
+        }
+      });
+    }
+
+    function notify(title, body) {
+      addLog(`${title} · ${body}`);
+      playBeep();
+      if (state.notificationReady && "Notification" in window && Notification.permission === "granted") {
+        new Notification(title, { body });
+      }
+    }
+
+    function addLog(message) {
+      if (els.alertLog.textContent.includes("아직 알림이 없습니다.")) {
+        els.alertLog.innerHTML = "";
+      }
+      const item = document.createElement("div");
+      item.className = "log-item";
+      item.textContent = `${new Date().toLocaleTimeString("ko-KR", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit"
+      })} · ${message}`;
+      els.alertLog.prepend(item);
+    }
+
+    function playBeep() {
+      try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContext) return;
+        const context = new AudioContext();
+        const oscillator = context.createOscillator();
+        const gain = context.createGain();
+        oscillator.frequency.value = 880;
+        gain.gain.value = 0.04;
+        oscillator.connect(gain);
+        gain.connect(context.destination);
+        oscillator.start();
+        oscillator.stop(context.currentTime + 0.16);
+      } catch {
+        // Audio is best effort only.
+      }
+    }
+
+    async function enableNotifications() {
+      if (!("Notification" in window)) {
+        els.alertState.textContent = "브라우저 알림 미지원";
+        return;
+      }
+      const permission = await Notification.requestPermission();
+      state.notificationReady = permission === "granted";
+      els.alertState.textContent = state.notificationReady ? "알림 켜짐" : "알림 권한 없음";
+      document.getElementById("notifyBtn").disabled = state.notificationReady;
+    }
+
+    function scheduleRefresh() {
+      if (state.refreshTimer) window.clearInterval(state.refreshTimer);
+      state.refreshTimer = window.setInterval(() => {
+        fetchChart().catch(handleError);
+        fetchMacroData().catch(handleMacroError);
+      }, 60000);
+    }
+
+    function handleError(error) {
+      els.dataSource.innerHTML = `<span class="error">${error.message}</span>`;
+      addLog(`시세 갱신 실패 · ${error.message}`);
+    }
+
+    function handleMacroError(error) {
+      addLog(`거시 데이터 갱신 실패 · ${error.message}`);
+    }
+
+    function openStockChartModal() {
+      els.stockChartModal.hidden = false;
+      document.body.style.overflow = "hidden";
+      drawCharts();
+    }
+
+    function closeStockChartModal() {
+      els.stockChartModal.hidden = true;
+      document.body.style.overflow = "";
+    }
+
+    document.getElementById("refreshBtn").addEventListener("click", () => {
+      fetchChart().catch(handleError);
+      fetchMacroData().catch(handleMacroError);
+    });
+
+    document.getElementById("notifyBtn").addEventListener("click", enableNotifications);
+
+    document.getElementById("expandStockChartBtn").addEventListener("click", openStockChartModal);
+
+    document.getElementById("closeStockChartBtn").addEventListener("click", closeStockChartModal);
+
+    document.getElementById("resetStockZoomBtn").addEventListener("click", () => {
+      resetStockZoom();
+      drawCharts();
+    });
+
+    els.stockChartModal.addEventListener("click", (event) => {
+      if (event.target === els.stockChartModal) closeStockChartModal();
+    });
+
+    els.zoomPriceCanvas.addEventListener("wheel", (event) => {
+      event.preventDefault();
+      zoomStockChartAt(event.clientX, event.deltaY);
+    }, { passive: false });
+
+    els.zoomPriceCanvas.addEventListener("pointerdown", (event) => {
+      syncStockZoom(state.points.length);
+      state.stockZoom.dragging = true;
+      state.stockZoom.dragX = event.clientX;
+      state.stockZoom.dragStart = state.stockZoom.start;
+      state.stockZoom.dragEnd = state.stockZoom.end;
+      els.zoomPriceCanvas.classList.add("dragging");
+      els.zoomPriceCanvas.setPointerCapture(event.pointerId);
+    });
+
+    els.zoomPriceCanvas.addEventListener("pointermove", (event) => {
+      if (!state.stockZoom.dragging) return;
+      panStockChart(event.clientX - state.stockZoom.dragX);
+    });
+
+    els.zoomPriceCanvas.addEventListener("pointerup", (event) => {
+      state.stockZoom.dragging = false;
+      els.zoomPriceCanvas.classList.remove("dragging");
+      if (els.zoomPriceCanvas.hasPointerCapture(event.pointerId)) {
+        els.zoomPriceCanvas.releasePointerCapture(event.pointerId);
+      }
+    });
+
+    els.zoomPriceCanvas.addEventListener("pointerleave", () => {
+      if (!state.stockZoom.dragging) return;
+      state.stockZoom.dragging = false;
+      els.zoomPriceCanvas.classList.remove("dragging");
+    });
+
+    window.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && !els.stockChartModal.hidden) closeStockChartModal();
+    });
+
+    document.getElementById("saveBtn").addEventListener("click", () => {
+      readInputs();
+      saveConfig();
+      renderAll();
+      fetchChart().catch(handleError);
+    });
+
+    document.getElementById("resetAlertsBtn").addEventListener("click", () => {
+      state.fired = {};
+      saveFiredAlerts();
+      addLog("알림 기록 초기화");
+    });
+
+    document.querySelectorAll(".range-switch button").forEach((button) => {
+      button.addEventListener("click", () => {
+        state.config.range = button.dataset.range;
+        saveConfig();
+        applyInputs();
+        resetStockZoom(0);
+        fetchChart().catch(handleError);
+      });
+    });
+
+    window.addEventListener("resize", () => {
+      if (state.points.length) drawCharts();
+    });
+
+    applyInputs();
+    renderAll();
+    fetchChart().catch(handleError);
+    fetchMacroData().catch(handleMacroError);
+    scheduleRefresh();
+  </script>
+</body>
+</html>
