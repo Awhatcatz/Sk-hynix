@@ -1,0 +1,25 @@
+# Credentials and local-only data
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+.runtime/
+.codex/
+.agents/
+.sites-runtime/
+.vercel/
+.wrangler/
+
+# Dependencies, generated files, and local test output
+node_modules/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.tsbuildinfo
+.next/
+.vinext/
+dist/
+outputs/
+work/
+*.log

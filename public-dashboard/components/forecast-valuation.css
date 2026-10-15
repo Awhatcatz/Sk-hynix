@@ -1,0 +1,101 @@
+.forecast-valuation {
+  --fv-line: #30363b;
+  --fv-muted: #a1abb3;
+  --fv-accent: #65d2a5;
+  width: 100%;
+  min-width: 0;
+  color: #e6eaed;
+  font-size: 12px;
+  line-height: 1.6;
+  letter-spacing: 0;
+}
+.forecast-valuation *, .forecast-valuation *::before, .forecast-valuation *::after { box-sizing: border-box; }
+.forecast-valuation .fv-section { padding: 18px 0; border-top: 1px solid var(--fv-line); min-width: 0; }
+.forecast-valuation .fv-heading { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 12px; }
+.forecast-valuation h3 { display: flex; align-items: center; gap: 7px; margin: 0; font-size: 14px; font-weight: 600; }
+.forecast-valuation h4 { margin: 0 0 4px; font-size: 12px; font-weight: 600; overflow-wrap: anywhere; }
+.forecast-valuation svg { flex: 0 0 auto; }
+.forecast-valuation .fv-controls { display: flex; align-items: end; flex-wrap: wrap; gap: 12px; max-width: 100%; }
+.forecast-valuation label { display: grid; gap: 4px; min-width: 0; color: var(--fv-muted); font-size: 11px; }
+.forecast-valuation select, .forecast-valuation input {
+  width: 132px;
+  max-width: 100%;
+  min-width: 0;
+  height: 36px;
+  border: 1px solid #434b52;
+  border-radius: 4px;
+  padding: 0 9px;
+  background: #15181b;
+  color: #e6eaed;
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+}
+.forecast-valuation select:disabled { opacity: .65; }
+.forecast-valuation input[aria-invalid="true"] { border-color: #ee6b75; }
+.forecast-valuation :is(button, select, input, a, summary):focus-visible { outline: 2px solid var(--fv-accent); outline-offset: 3px; }
+.forecast-valuation .fv-method { border: 0; padding: 0; margin: 0; min-width: 0; }
+.forecast-valuation .fv-method legend { padding: 0; margin-bottom: 4px; color: var(--fv-muted); font-size: 11px; }
+.forecast-valuation .fv-segmented { display: flex; width: 116px; height: 36px; border: 1px solid #434b52; border-radius: 4px; padding: 2px; }
+.forecast-valuation .fv-segmented button { flex: 1; min-width: 0; border: 0; border-radius: 2px; background: transparent; color: var(--fv-muted); font: inherit; cursor: pointer; }
+.forecast-valuation .fv-segmented button[aria-pressed="true"] { background: #30383e; color: #e6eaed; }
+.forecast-valuation .fv-note { margin: 0; color: var(--fv-muted); font-size: 11px; overflow-wrap: anywhere; }
+.forecast-valuation .fv-disclaimer { margin-top: 12px; }
+.forecast-valuation .fv-empty, .forecast-valuation .fv-error { margin: 16px 0; padding: 12px 0; color: var(--fv-muted); overflow-wrap: anywhere; }
+.forecast-valuation .fv-error { color: #f499a1; }
+.forecast-valuation .fv-plot { margin-top: 10px; width: 100%; min-width: 0; }
+.forecast-valuation .fv-plot-table { display: block; width: 100%; min-width: 0; border-collapse: collapse; table-layout: fixed; }
+.forecast-valuation .fv-plot-table tbody { display: block; width: 100%; }
+.forecast-valuation .fv-plot-table tbody tr { display: grid; grid-template-columns: minmax(150px, 205px) minmax(0, 1fr) minmax(130px, 190px); align-items: center; gap: 18px; padding: 13px 0; border-bottom: 1px solid #252b2f; }
+.forecast-valuation .fv-plot-table th, .forecast-valuation .fv-plot-table td { padding: 0; min-width: 0; border: 0; background: transparent; }
+.forecast-valuation .fv-row-label { text-align: left; font-weight: 500; overflow-wrap: anywhere; }
+.forecast-valuation .fv-row-label > span { display: block; }
+.forecast-valuation .fv-row-label > small, .forecast-valuation .fv-row-label a { display: block; margin-top: 3px; color: var(--fv-muted); font-size: 10px; font-weight: 400; }
+.forecast-valuation a { text-decoration: none; }
+.forecast-valuation a:hover { color: var(--fv-accent); text-decoration: underline; }
+.forecast-valuation .fv-row-label a svg { display: inline; margin-left: 4px; vertical-align: middle; }
+.forecast-valuation .fv-track-cell { padding: 0 6px !important; }
+.forecast-valuation .fv-track { position: relative; height: 24px; width: 100%; }
+.forecast-valuation .fv-track::before { content: ""; position: absolute; left: 0; right: 0; top: 11px; height: 2px; background: #343c42; }
+.forecast-valuation .fv-zero { position: absolute; top: 6px; height: 12px; border-left: 1px solid #727d85; }
+.forecast-valuation .fv-bar { position: absolute; top: 10px; height: 4px; background: #73838d; }
+.forecast-valuation .fv-marker { position: absolute; top: 7px; width: 10px; height: 10px; background: #c5cdd3; border: 2px solid #101214; border-radius: 50%; transform: translateX(-50%); }
+.forecast-valuation .fv-reference { position: absolute; top: 1px; height: 22px; border-left: 1px dashed #e6eaed; z-index: 1; }
+.forecast-valuation .fv-mean-row .fv-bar { background: var(--fv-accent); }
+.forecast-valuation .fv-mean-row .fv-marker { border-radius: 0; background: var(--fv-accent); transform: translateX(-50%) rotate(45deg); }
+.forecast-valuation .fv-mean-row .fv-row-label > span { color: var(--fv-accent); }
+.forecast-valuation .fv-row-value { text-align: right; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.forecast-valuation .fv-row-value strong { display: block; font-size: 14px; font-weight: 500; }
+.forecast-valuation .fv-row-value strong small { font-size: 10px; color: var(--fv-muted); font-weight: 400; }
+.forecast-valuation .fv-row-value > small { display: block; margin-top: 4px; color: var(--fv-muted); font-size: 10px; }
+.forecast-valuation .fv-row-value > small span { display: block; }
+.forecast-valuation .fv-axis { display: flex; justify-content: space-between; gap: 12px; margin: 6px 208px 0 223px; color: var(--fv-muted); font-size: 10px; font-variant-numeric: tabular-nums; }
+.forecast-valuation .fv-axis span { min-width: 0; overflow-wrap: anywhere; }
+.forecast-valuation .fv-axis span:last-child { text-align: right; }
+.forecast-valuation .fv-valuation-meta { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px 16px; }
+.forecast-valuation .fv-quote { margin: 0; display: inline-flex; align-items: center; gap: 6px; color: #c5cdd3; font-size: 11px; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.forecast-valuation .fv-quote i { display: block; width: 10px; height: 14px; border-left: 1px dashed #e6eaed; flex: 0 0 auto; }
+.forecast-valuation .fv-sources { margin-top: 16px; border-top: 1px solid var(--fv-line); }
+.forecast-valuation .fv-sources summary { display: flex; align-items: center; gap: 7px; padding: 12px 0; color: #c5cdd3; cursor: pointer; }
+.forecast-valuation .fv-sources summary::after { content: "+"; margin-left: auto; }
+.forecast-valuation .fv-sources[open] summary::after { content: "-"; }
+.forecast-valuation .fv-source { padding: 12px 0; border-top: 1px solid #252b2f; }
+.forecast-valuation .fv-bases { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 12px 0; }
+.forecast-valuation .fv-bases div { min-width: 0; }
+.forecast-valuation .fv-bases dt { color: var(--fv-muted); font-size: 10px; overflow-wrap: anywhere; }
+.forecast-valuation .fv-bases dd { margin: 2px 0 0; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.forecast-valuation .fv-source-links { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 8px; }
+.forecast-valuation .fv-source-links a { display: inline-flex; align-items: center; gap: 4px; min-width: 0; font-size: 11px; overflow-wrap: anywhere; }
+.forecast-valuation .fv-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+@media (max-width: 680px) {
+  .forecast-valuation .fv-heading { align-items: flex-start; gap: 12px; }
+  .forecast-valuation .fv-controls { width: 100%; gap: 10px; }
+  .forecast-valuation .fv-controls > label { flex: 1 1 105px; }
+  .forecast-valuation select, .forecast-valuation input { width: 100%; }
+  .forecast-valuation .fv-method { flex: 0 0 105px; }
+  .forecast-valuation .fv-segmented { width: 100%; }
+  .forecast-valuation .fv-plot-table tbody tr { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px 12px; align-items: start; }
+  .forecast-valuation .fv-row-label { grid-column: 1; grid-row: 1; }
+  .forecast-valuation .fv-row-value { grid-column: 2; grid-row: 1; }
+  .forecast-valuation .fv-track-cell { grid-column: 1 / -1; grid-row: 2; }
+  .forecast-valuation .fv-axis { margin: 6px 6px 0; }
+}
